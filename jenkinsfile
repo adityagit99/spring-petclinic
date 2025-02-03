@@ -1,0 +1,15 @@
+pipeline {
+     agent { label: 'SPC-NODE-1'}
+     stages {
+        stage ('GIT URL')
+            steps {
+                git url: 'https://github.com/adityagit99/spring-petclinic.git',
+                    branch: 'main' 
+                   }            
+            }
+        stage ('BUILD') {
+             steps {
+                sh 'mvn package'
+             }
+            }    
+        }
