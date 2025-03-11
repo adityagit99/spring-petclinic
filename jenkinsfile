@@ -1,20 +1,26 @@
 pipeline {
-     agent { label 'SPC-NODE-1'}
-     stages {
-        stage ('GIT URL') {
-            steps {
-                git url: 'https://github.com/adityagit99/spring-petclinic.git',
-                    branch: 'main' 
-                   }            
-            }
-        stage ('BUILD') {
-             steps {
-                sh 'mvn_aditya_node2 package'
-             }
-            }    
-        }
-    }    
-
-
-
-    
+  agent {
+    label "adityaCD"
+  }
+  stages {
+    stage ('Git Checkout') {
+      steps {
+        git branch: 'main', url: 'https://github.com/adityagit99/spring-petclinic.git'
+      }
+    }
+    stage ('Terraform IAC') {
+      steps {
+        sh 'terraform -chdir=C:/Users/lenovo/Downloads/fulldeployement/spring-petclinic/terraform init'
+        sh 'terraform -chdir=C:/Users/lenovo/Downloads/fulldeployement/spring-petclinic/terraform validate'
+        sh 'terraform -chdir=C:/Users/lenovo/Downloads/fulldeployement/spring-petclinic/terraform fmt'
+        sh 'terraform -chdir=C:/Users/lenovo/Downloads/fulldeployement/spring-petclinic/terraform plan'
+        sh 'terraform -chdir=C:/Users/lenovo/Downloads/fulldeployement/spring-petclinic/terraform apply --auto-approve'
+      }
+    }
+    stage ('Deployment with K8S') {
+      steps {
+        sh 'kubectl apply -f C:/Users/lenovo/Downloads/fulldeployement/spring-petclinic/k8s/cicd-deployment.yml'
+      }
+    }
+  }
+}
